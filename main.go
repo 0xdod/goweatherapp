@@ -103,9 +103,13 @@ func getWeather(lat string, lng string) {
 		appTemp = wr.ApparentTemperature
 	)
 	if temp == appTemp {
-		msg = "Temperature is " + fmt.Sprint(temp)
+		msg = "Temperature is " + fmt.Sprintf("%.2f", ftc(temp))
 	} else {
-		msg = "Temperature currently is " + fmt.Sprint(temp) + " but it feels like " + fmt.Sprint(appTemp) + " here!"
+		msg = "Temperature currently is " + fmt.Sprintf("%.2f", ftc(temp)) + " but it feels like " + fmt.Sprintf("%.2f", ftc(appTemp)) + " here!"
 	}
 	fmt.Println(msg)
+}
+
+func ftc(t float64) float64 {
+	return ((t - 32) / 1.8)
 }
