@@ -44,6 +44,7 @@ type weatherReport struct {
 }
 
 func main() {
+	ch := make(chan bool)
 	app := cli.NewApp()
 	app.Name = "Weather App"
 	app.Usage = "Fetches weather details of a location"
@@ -57,13 +58,14 @@ func main() {
 	app.Action = func(c *cli.Context) error {
 		addr := url.QueryEscape(c.GlobalString("address"))
 		geocodeURL := "https://api.opencagedata.com/geocode/v1/json?q=" + addr + "&key=" + geoCodeKey
-		geoCodeRequest(geocodeURL)
+		go geoCodeRequest(geocodeURL, ch)
 		return nil
 	}
 	app.Run(os.Args)
+	<-ch
 }
 
-func geoCodeRequest(url string) {
+func geoCodeRequest(url string, ch chan bool) {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -83,6 +85,7 @@ func geoCodeRequest(url string) {
 		)
 		fmt.Println("Fetching weather result for " + data.Results[0].Formatted)
 		getWeather(lat, lng)
+		ch <- true
 	}
 }
 
